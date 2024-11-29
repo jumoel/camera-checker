@@ -13,30 +13,21 @@ class CameraChecker: NSObject, USBWatcherDelegate, URLSessionDelegate {
     private var onEvent: String
     private var offEvent: String
     private var key: String
-    private var localUrl: String?
-    private var localCheckString: String?
     private var templateURL = "https://maker.ifttt.com/trigger/%@/with/key/%@"
     private var usbWatcher: USBWatcher!
     private var isInitialized: Bool = false
-    private var localCheck = true
     private var ignoreCameras: [String] = []
     private var debug: Bool
 
 
-    init(onEvent: String, offEvent: String, key: String, localUrl: String?, localCheckString: String?, ignore: String?, debug: Bool){
+    init(onEvent: String, offEvent: String, key: String, ignore: String?, debug: Bool){
 
         self.onEvent = onEvent
         self.offEvent = offEvent
         self.key = key
-        self.localUrl = localUrl
-        self.localCheckString = localCheckString
         self.debug = debug
 
         super.init()
-        if localUrl == nil {
-            logger.info("Local checking disabled!")
-            localCheck = false
-        }
 
         if (ignore != nil) {
             ignoreCameras = (ignore?.split(separator: ",").map { String($0) })!
@@ -79,15 +70,6 @@ class CameraChecker: NSObject, USBWatcherDelegate, URLSessionDelegate {
         let event: String
         let message: String
 
-        if localCheck {
-            if !isLocal() {
-                logger.info("Location is not local. Skipping..")
-                return
-            } else {
-                logger.info("Location is local!")
-            }
-        }
-
         if(cameras.contains{$0.isOn()}){
             let cameraString = cameras.filter{$0.isOn()}.map{$0.description}.joined(separator: ", ")
             message = "Camera(s) \(cameraString) are on"
@@ -116,29 +98,6 @@ class CameraChecker: NSObject, USBWatcherDelegate, URLSessionDelegate {
         task.arguments = ["-e", "display notification \"\(message)\" with title \"Camera\" sound name \"Purr\""]
         task.launch()
         task.waitUntilExit()
-    }
-
-    func isLocal() -> Bool{
-        var local: Bool = false
-        let sessionConfig = URLSessionConfiguration.default
-        sessionConfig.timeoutIntervalForRequest = 2.0
-        sessionConfig.timeoutIntervalForResource = 4.0
-
-        let session = URLSession(configuration: sessionConfig, delegate: self, delegateQueue: nil)
-
-        let semaphore = DispatchSemaphore(value: 0)
-        let task = session.dataTask(with: URL(string: localUrl!)!){(data, response, error) in
-            guard let data = data else {
-                semaphore.signal()
-                return
-            }
-
-            local = String(data: data, encoding: .utf8)!.contains(self.localCheckString!)
-            semaphore.signal()
-        }
-        task.resume()
-        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
-        return local
     }
 
     // URLSession delegate method to ignore SSL certificate validity
