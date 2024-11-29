@@ -1,7 +1,7 @@
 import ArgumentParser
 //
 //  main.swift
-//  onair
+//  camera-checker
 //
 // Created by wouter.de.bie on 11/17/19.
 // Modified by Julian Møller Ellehauge 2024
@@ -40,7 +40,7 @@ sigintSrc.resume()
 sigtermSrc.setEventHandler(handler: die)
 sigtermSrc.resume()
 
-struct OnAir: ParsableCommand {
+struct CameraCheckerApp: ParsableCommand {
 	@Option(
 		help: ArgumentHelp(
 			"(optional) Comma-separated list of camera names to ignore", valueName: "list"))
@@ -88,4 +88,4 @@ struct OnAir: ParsableCommand {
 	}
 }
 
-OnAir.main()
+CameraCheckerApp.main()
