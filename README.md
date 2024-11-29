@@ -4,7 +4,9 @@ Command line utility that logs JSON to stdout when any webcam turns on or off.
 
 ## Background
 
-Originally built by @wouterdebie in https://github.com/wouterdebie/onair
+Originally built by [@wouterdebie](https://github.com/wouterdebie) in https://github.com/wouterdebie/onair.
+
+Modified, because I wanted something simple to integrate with a Stream Deck.
 
 ## Usage
 
