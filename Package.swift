@@ -18,6 +18,15 @@ let package = Package(
 		// Targets can depend on other targets in this package, and on products in packages which this package depends on.
 		.target(
 			name: "camera-checker",
-			dependencies: ["SwiftToolsSupport-auto", "Logging", "ArgumentParser"])
+			dependencies: ["SwiftToolsSupport-auto", "Logging", "ArgumentParser"],
+			linkerSettings: [
+				.unsafeFlags([
+					"-Xlinker", "-sectcreate",
+					"-Xlinker", "__TEXT",
+					"-Xlinker", "__info_plist",
+					"-Xlinker", "Sources/Resources/Info.plist",
+				])
+			]
+		)
 	]
 )

@@ -31,11 +31,17 @@ class CameraChecker: NSObject, USBWatcherDelegate, URLSessionDelegate {
 		if self.debug {
 			logger.info("Camera(s) found:")
 		}
+		var deviceTypes: [AVCaptureDevice.DeviceType] = [
+			AVCaptureDevice.DeviceType.builtInWideAngleCamera
+		]
+
+		if #available(macOS 14.0, *) {
+			deviceTypes.append(AVCaptureDevice.DeviceType.external)
+			deviceTypes.append(AVCaptureDevice.DeviceType.continuityCamera)
+		}
+
 		let deviceDescoverySession = AVCaptureDevice.DiscoverySession.init(
-			deviceTypes: [
-				AVCaptureDevice.DeviceType.builtInWideAngleCamera,
-				AVCaptureDevice.DeviceType.externalUnknown,
-			],
+			deviceTypes: deviceTypes,
 			mediaType: AVMediaType.video,
 			position: AVCaptureDevice.Position.unspecified)
 
